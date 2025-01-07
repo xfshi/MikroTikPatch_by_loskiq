@@ -6,6 +6,7 @@ from toyecc import AffineCurvePoint, getcurvebyname, FieldElement,ECPrivateKey,E
 
 MIKRO_BASE64_CHARACTER_TABLE = b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 SOFTWARE_ID_CHARACTER_TABLE = b'TN0BYX18S5HZ4IA67DGF3LPCJQRUK9MW2VE'
+SYSTEM_ID_CHARACTER_TABLE = b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 MIKRO_SHA256_K = (
   0x0548D563, 0x98308EAB, 0x37AF7CCC, 0xDFBC4E3C,
@@ -42,6 +43,22 @@ def mikro_softwareid_encode(id:int)->str:
     id //= len(SOFTWARE_ID_CHARACTER_TABLE)
     if i == 3:
       ret += '-'
+  return ret
+
+def mikro_systemid_decode(software_id:str)->int:
+  assert(isinstance(software_id, str))
+  ret = 0
+  for i in reversed(range(len(software_id))):
+    ret *= len(SYSTEM_ID_CHARACTER_TABLE)
+    ret += SYSTEM_ID_CHARACTER_TABLE.index(ord(software_id[i]))
+  return ret
+
+def mikro_systemid_encode(id:int)->str:
+  assert(isinstance(id, int))
+  ret = ''
+  for i in range(11):
+    ret += chr(SYSTEM_ID_CHARACTER_TABLE[id % len(SYSTEM_ID_CHARACTER_TABLE)])
+    id //= len(SYSTEM_ID_CHARACTER_TABLE)
   return ret
 
 def to32bits(v):
