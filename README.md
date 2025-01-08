@@ -5,7 +5,7 @@
 ```
 apt-get update
 apt-get install -y wget curl mkisofs xorriso sudo zip unzip git squashfs-tools \
-rsync ca-certificates python3 qemu-utils extlinux dosfstools --no-install-recommends
+rsync ca-certificates python3 python3-pefile qemu-utils extlinux dosfstools --no-install-recommends
 ```
 
 # Usage
@@ -63,7 +63,7 @@ python3 patch.py kernel ./efiboot/linux.x86_64
 cp ./efiboot/linux.x86_64 ./BOOTX64.EFI
 cp ./BOOTX64.EFI ./new_iso/isolinux/linux
 umount ./efiboot
-mkisofs -o mikrotik-$VERSION-patch.iso \
+mkisofs -o mikrotik-$VERSION-patched.iso \
 	-V "MikroTik $VERSION x86" \
 	-sysid "" -preparer "MiKroTiK" \
 	-publisher "" -A "MiKroTiK RouterOS" \
@@ -83,16 +83,16 @@ mkdir ./all_packages
 cp ./new_iso/*.npk ./all_packages/
 rm -rf ./new_iso
 cd ./all_packages
-zip ../all_packages-x86-$VERSION.zip *.npk
+zip ../all_packages-x86-$VERSION-patched.zip *.npk
 cd ..
 ```
 
 ## Patch install-image
 
 ```
-cp install-image.img install-image-$VERSION-patch.img
+cp install-image.img install-image-$VERSION-patched.img
 modprobe nbd
-qemu-nbd -c /dev/nbd0 -f raw install-image-$VERSION-patch.img
+qemu-nbd -c /dev/nbd0 -f raw install-image-$VERSION-patched.img
 mkdir ./install-image
 mount /dev/nbd0 ./install-image
 cp ../refind-bin-0.14.2/refind/refind_x64.efi ./install-image/EFI/BOOT/BOOTX64.EFI
@@ -107,19 +107,19 @@ umount /dev/nbd0
 qemu-nbd -d /dev/nbd0
 rm -rf ./install-image
 
-qemu-img convert -f raw -O qcow2 install-image-$VERSION-patch.img install-image-$VERSION-patch.qcow2
-qemu-img convert -f raw -O vmdk install-image-$VERSION-patch.img install-image-$VERSION-patch.vmdk
-qemu-img convert -f raw -O vpc install-image-$VERSION-patch.img install-image-$VERSION-patch.vhd
-qemu-img convert -f raw -O vhdx install-image-$VERSION-patch.img install-image-$VERSION-patch.vhdx
-qemu-img convert -f raw -O vdi install-image-$VERSION-patch.img install-image-$VERSION-patch.vdi
+qemu-img convert -f raw -O qcow2 install-image-$VERSION-patched.img install-image-$VERSION-patched.qcow2
+qemu-img convert -f raw -O vmdk install-image-$VERSION-patched.img install-image-$VERSION-patched.vmdk
+qemu-img convert -f raw -O vpc install-image-$VERSION-patched.img install-image-$VERSION-patched.vhd
+qemu-img convert -f raw -O vhdx install-image-$VERSION-patched.img install-image-$VERSION-patched.vhdx
+qemu-img convert -f raw -O vdi install-image-$VERSION-patched.img install-image-$VERSION-patched.vdi
 ```
 
 ## Patch Cloud Hosted Router
 
 ```
-cp chr.img chr-$VERSION-patch.img
+cp chr.img chr-$VERSION-patched.img
 modprobe nbd
-qemu-nbd -c /dev/nbd0 -f raw chr-$VERSION-patch.img
+qemu-nbd -c /dev/nbd0 -f raw chr-$VERSION-patched.img
 mkdir -p ./chr/{boot,routeros}
 mount /dev/nbd0p1 ./chr/boot/
 mkdir -p ./chr/boot/BOOT
@@ -135,11 +135,41 @@ umount /dev/nbd0p2
 qemu-nbd -d /dev/nbd0
 rm -rf ./chr
 
-qemu-img convert -f raw -O qcow2 chr-$VERSION-patch.img chr-$VERSION-patch.qcow2
-qemu-img convert -f raw -O vmdk chr-$VERSION-patch.img chr-$VERSION-patch.vmdk
-qemu-img convert -f raw -O vpc chr-$VERSION-patch.img chr-$VERSION-patch.vhd
-qemu-img convert -f raw -O vhdx chr-$VERSION-patch.img chr-$VERSION-patch.vhdx
-qemu-img convert -f raw -O vdi chr-$VERSION-patch.img chr-$VERSION-patch.vdi
+qemu-img convert -f raw -O qcow2 chr-$VERSION-patched.img chr-$VERSION-patched.qcow2
+qemu-img convert -f raw -O vmdk chr-$VERSION-patched.img chr-$VERSION-patched.vmdk
+qemu-img convert -f raw -O vpc chr-$VERSION-patched.img chr-$VERSION-patched.vhd
+qemu-img convert -f raw -O vhdx chr-$VERSION-patched.img chr-$VERSION-patched.vhdx
+qemu-img convert -f raw -O vdi chr-$VERSION-patched.img chr-$VERSION-patched.vdi
+```
+
+## Patch Netinstall
+
+```
+wget https://download.mikrotik.com/routeros/$VERSION/netinstall-$VERSION.zip
+unzip netinstall-$VERSION.zip
+python3 patch.py netinstall netinstall.exe
+zip netinstall-$VERSION-patched.zip netinstall.exe
+rm netinstall-$VERSION.zip netinstall.exe LICENSE.txt
+```
+
+## Patch MIPSBE
+
+```
+wget https://download.mikrotik.com/routeros/$VERSION/routeros-$VERSION-mipsbe.npk
+wget https://download.mikrotik.com/routeros/$VERSION/all_packages-mipsbe-$VERSION.zip
+mkdir ./all_packages-mipsbe
+unzip all_packages-mipsbe-$VERSION.zip -d ./all_packages-mipsbe/
+python3 patch.py npk routeros-$VERSION-mipsbe.npk
+mv routeros-$VERSION-mipsbe.npk routeros-$VERSION-mipsbe-patched.npk
+rm all_packages-mipsbe-$VERSION.zip
+NPK_FILES=$(find ./all_packages-mipsbe/*.npk)
+for file in $NPK_FILES; do
+	python3 npk.py sign $file $file
+done
+cd ./all_packages-mipsbe
+zip ../all_packages-mipsbe-$VERSION-patched.zip *.npk
+cd ../
+rm -rf ./all_packages-mipsbe
 ```
 
 ## Generate license for RouterOS
