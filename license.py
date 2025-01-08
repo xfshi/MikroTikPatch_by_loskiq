@@ -94,7 +94,7 @@ if __name__=='__main__':
     licparsechr_parser = subparsers.add_parser('licparsechr',help='Parse CHR License')
     licparsechr_parser.add_argument('license',type=str, help='License String. Format: 66c1aRpjM52VlmgwPWQv6b6DPwX3vyg+vxlgb+ebXMP2K5A0Ei2mr5m+wHLUqrqmTNz7shFjNJAaMjXK3zXvIA==')
     licparsechr_parser.add_argument('public_key',type=str, help='Public Key')
-    
+
     args = parser.parse_args()
 
     MIKRO_LICENSE_HEADER = '-----BEGIN MIKROTIK SOFTWARE KEY------------'

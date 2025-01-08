@@ -54,7 +54,7 @@ mv ./new_iso/routeros-$VERSION.npk ./
 python3 patch.py npk routeros-$VERSION.npk
 NPK_FILES=$(find ./new_iso/*.npk)
 for file in $NPK_FILES; do
-	python3 npk.py sign $file $file
+  python3 npk.py sign $file $file
 done
 cp routeros-$VERSION.npk ./new_iso/
 mkdir ./efiboot
@@ -64,20 +64,20 @@ cp ./efiboot/linux.x86_64 ./BOOTX64.EFI
 cp ./BOOTX64.EFI ./new_iso/isolinux/linux
 umount ./efiboot
 mkisofs -o mikrotik-$VERSION-patched.iso \
-	-V "MikroTik $VERSION x86" \
-	-sysid "" -preparer "MiKroTiK" \
-	-publisher "" -A "MiKroTiK RouterOS" \
-	-input-charset utf-8 \
-	-b isolinux/isolinux.bin \
-	-c isolinux/boot.cat \
-	-no-emul-boot \
-	-boot-load-size 4 \
-	-boot-info-table \
-	-eltorito-alt-boot \
-	-e efiboot.img \
-	-no-emul-boot \
-	-R -J \
-	./new_iso
+  -V "MikroTik $VERSION x86" \
+  -sysid "" -preparer "MiKroTiK" \
+  -publisher "" -A "MiKroTiK RouterOS" \
+  -input-charset utf-8 \
+  -b isolinux/isolinux.bin \
+  -c isolinux/boot.cat \
+  -no-emul-boot \
+  -boot-load-size 4 \
+  -boot-info-table \
+  -eltorito-alt-boot \
+  -e efiboot.img \
+  -no-emul-boot \
+  -R -J \
+  ./new_iso
 rm -rf ./efiboot
 mkdir ./all_packages
 cp ./new_iso/*.npk ./all_packages/
@@ -164,13 +164,15 @@ mv routeros-$VERSION-mipsbe.npk routeros-$VERSION-mipsbe-patched.npk
 rm all_packages-mipsbe-$VERSION.zip
 NPK_FILES=$(find ./all_packages-mipsbe/*.npk)
 for file in $NPK_FILES; do
-	python3 npk.py sign $file $file
+  python3 npk.py sign $file $file
 done
 cd ./all_packages-mipsbe
 zip ../all_packages-mipsbe-$VERSION-patched.zip *.npk
 cd ../
 rm -rf ./all_packages-mipsbe
 ```
+
+Similarly for ARM, ARM64 and other architectures.
 
 ## Generate license for RouterOS
 

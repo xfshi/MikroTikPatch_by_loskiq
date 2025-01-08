@@ -106,7 +106,7 @@ def find_7zXZ_data(data:bytes):
         offset2 = offset2 + _data.index(b'\x00\x00\x00\x00\x01\x59\x5A') + 7
         _data = _data[offset2:]
     print(f'found 7zXZ data offset:{offset1} size:{offset2-offset1}')
-    return data[offset1:offset2] 
+    return data[offset1:offset2]
 
 def patch_elf(data: bytes,key_dict:dict):
     initrd_xz = find_7zXZ_data(data)
@@ -250,7 +250,7 @@ def patch_squashfs(path,key_dict):
                         print(f'{file} public key patched {old_public_key[:16].hex().upper()}...')
                         data = data.replace(old_public_key,new_public_key)
                         open(file,'wb').write(data)
-                    
+
 def run_shell_command(command):
     process = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return process.stdout, process.stderr
@@ -325,6 +325,3 @@ if __name__ == '__main__':
         patch_netinstall(key_dict,args.input,args.output)
     else:
         parser.print_help()
-
-
-    
