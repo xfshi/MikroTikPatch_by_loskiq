@@ -45,12 +45,12 @@ def mikro_softwareid_encode(id:int)->str:
       ret += '-'
   return ret
 
-def mikro_systemid_decode(software_id:str)->int:
-  assert(isinstance(software_id, str))
+def mikro_systemid_decode(system_id:str)->int:
+  assert(isinstance(system_id, str))
   ret = 0
-  for i in reversed(range(len(software_id))):
+  for i in reversed(range(len(system_id))):
     ret *= len(SYSTEM_ID_CHARACTER_TABLE)
-    ret += SYSTEM_ID_CHARACTER_TABLE.index(ord(software_id[i]))
+    ret += SYSTEM_ID_CHARACTER_TABLE.index(ord(system_id[i]))
   return ret
 
 def mikro_systemid_encode(id:int)->str:
