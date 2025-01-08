@@ -40,7 +40,7 @@ cp chr-$VERSION.img ./MikroTikPatch/chr.img
 cd ./MikroTikPatch
 ```
 
-## Crack ISO
+## Patch ISO
 
 ```
 mkdir ./iso 
@@ -63,7 +63,7 @@ python3 patch.py kernel ./efiboot/linux.x86_64
 cp ./efiboot/linux.x86_64 ./BOOTX64.EFI
 cp ./BOOTX64.EFI ./new_iso/isolinux/linux
 umount ./efiboot
-mkisofs -o mikrotik-$VERSION-crack.iso \
+mkisofs -o mikrotik-$VERSION-patch.iso \
 	-V "MikroTik $VERSION x86" \
 	-sysid "" -preparer "MiKroTiK" \
 	-publisher "" -A "MiKroTiK RouterOS" \
@@ -87,12 +87,12 @@ zip ../all_packages-x86-$VERSION.zip *.npk
 cd ..
 ```
 
-## Crack install-image
+## Patch install-image
 
 ```
-cp install-image.img install-image-$VERSION-crack.img
+cp install-image.img install-image-$VERSION-patch.img
 modprobe nbd
-qemu-nbd -c /dev/nbd0 -f raw install-image-$VERSION-crack.img
+qemu-nbd -c /dev/nbd0 -f raw install-image-$VERSION-patch.img
 mkdir ./install-image
 mount /dev/nbd0 ./install-image
 cp ../refind-bin-0.14.2/refind/refind_x64.efi ./install-image/EFI/BOOT/BOOTX64.EFI
@@ -107,19 +107,19 @@ umount /dev/nbd0
 qemu-nbd -d /dev/nbd0
 rm -rf ./install-image
 
-qemu-img convert -f raw -O qcow2 install-image-$VERSION-crack.img install-image-$VERSION-crack.qcow2
-qemu-img convert -f raw -O vmdk install-image-$VERSION-crack.img install-image-$VERSION-crack.vmdk
-qemu-img convert -f raw -O vpc install-image-$VERSION-crack.img install-image-$VERSION-crack.vhd
-qemu-img convert -f raw -O vhdx install-image-$VERSION-crack.img install-image-$VERSION-crack.vhdx
-qemu-img convert -f raw -O vdi install-image-$VERSION-crack.img install-image-$VERSION-crack.vdi
+qemu-img convert -f raw -O qcow2 install-image-$VERSION-patch.img install-image-$VERSION-patch.qcow2
+qemu-img convert -f raw -O vmdk install-image-$VERSION-patch.img install-image-$VERSION-patch.vmdk
+qemu-img convert -f raw -O vpc install-image-$VERSION-patch.img install-image-$VERSION-patch.vhd
+qemu-img convert -f raw -O vhdx install-image-$VERSION-patch.img install-image-$VERSION-patch.vhdx
+qemu-img convert -f raw -O vdi install-image-$VERSION-patch.img install-image-$VERSION-patch.vdi
 ```
 
-## Crack Cloud Hosted Router
+## Patch Cloud Hosted Router
 
 ```
-cp chr.img chr-$VERSION-crack.img
+cp chr.img chr-$VERSION-patch.img
 modprobe nbd
-qemu-nbd -c /dev/nbd0 -f raw chr-$VERSION-crack.img
+qemu-nbd -c /dev/nbd0 -f raw chr-$VERSION-patch.img
 mkdir -p ./chr/{boot,routeros}
 mount /dev/nbd0p1 ./chr/boot/
 mkdir -p ./chr/boot/BOOT
@@ -135,11 +135,11 @@ umount /dev/nbd0p2
 qemu-nbd -d /dev/nbd0
 rm -rf ./chr
 
-qemu-img convert -f raw -O qcow2 chr-$VERSION-crack.img chr-$VERSION-crack.qcow2
-qemu-img convert -f raw -O vmdk chr-$VERSION-crack.img chr-$VERSION-crack.vmdk
-qemu-img convert -f raw -O vpc chr-$VERSION-crack.img chr-$VERSION-crack.vhd
-qemu-img convert -f raw -O vhdx chr-$VERSION-crack.img chr-$VERSION-crack.vhdx
-qemu-img convert -f raw -O vdi chr-$VERSION-crack.img chr-$VERSION-crack.vdi
+qemu-img convert -f raw -O qcow2 chr-$VERSION-patch.img chr-$VERSION-patch.qcow2
+qemu-img convert -f raw -O vmdk chr-$VERSION-patch.img chr-$VERSION-patch.vmdk
+qemu-img convert -f raw -O vpc chr-$VERSION-patch.img chr-$VERSION-patch.vhd
+qemu-img convert -f raw -O vhdx chr-$VERSION-patch.img chr-$VERSION-patch.vhdx
+qemu-img convert -f raw -O vdi chr-$VERSION-patch.img chr-$VERSION-patch.vdi
 ```
 
 ## Generate license for RouterOS
