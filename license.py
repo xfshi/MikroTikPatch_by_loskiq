@@ -101,7 +101,7 @@ if __name__=='__main__':
     MIKRO_LICENSE_FOOTER = '-----END MIKROTIK SOFTWARE KEY--------------'
 
     if args.command =='genkey':
-        print('export MIKRO_NPK_SIGN_PUBLIC_LKEY="C293CED638A2A33C681FC8DE98EE26C54EADC5390C2DFCE197D35C83C416CF59"')
+        print('export MIKRO_NPK_SIGN_PUBLIC_KEY="C293CED638A2A33C681FC8DE98EE26C54EADC5390C2DFCE197D35C83C416CF59"')
         print('export MIKRO_LICENSE_PUBLIC_KEY="8E1067E4305FCDC0CFBF95C10F96E5DFE8C49AEF486BD1A4E2E96C27F01E3E32"')
         eddsa_private_key, eddsa_public_key = generate_eddsa_keypair()
         print(f'export CUSTOM_NPK_SIGN_PRIVATE_KEY="{eddsa_private_key.hex().upper()}"')
