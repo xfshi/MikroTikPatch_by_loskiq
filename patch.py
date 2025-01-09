@@ -32,8 +32,7 @@ def patch_bzimage(data: bytes, key_dict: dict):
     new_initramfs = initramfs
     for old_public_key, new_public_key in key_dict.items():
         if old_public_key in new_initramfs:
-            print(f'initramfs public key patched {
-                  old_public_key[:16].hex().upper()}...')
+            print(f'initramfs public key patched {old_public_key[:16].hex().upper()}...')
             new_initramfs = new_initramfs.replace(
                 old_public_key, new_public_key)
     new_vmlinux = vmlinux.replace(initramfs, new_initramfs)
@@ -102,8 +101,7 @@ def patch_initrd_xz(initrd_xz: bytes, key_dict: dict, ljust=True):
     new_initrd = initrd
     for old_public_key, new_public_key in key_dict.items():
         if old_public_key in new_initrd:
-            print(f'initrd public key patched {
-                  old_public_key[:16].hex().upper()}...')
+            print(f'initrd public key patched {old_public_key[:16].hex().upper()}...')
             new_initrd = new_initrd.replace(old_public_key, new_public_key)
     new_initrd_xz = lzma.compress(new_initrd, check=lzma.CHECK_CRC32, filters=[
                                   {"id": lzma.FILTER_LZMA2, "preset": 9, }])
@@ -183,8 +181,7 @@ def patch_netinstall(key_dict: dict, input_file, output_file=None):
                     for sub_resource in resource.directory.entries:
                         if sub_resource.id in ROUTEROS_BOOT:
                             bootloader = ROUTEROS_BOOT[sub_resource.id]
-                            print(f'found {bootloader["arch"]}({
-                                  sub_resource.id}) bootloader')
+                            print(f'found {bootloader["arch"]}({sub_resource.id}) bootloader')
                             rva = sub_resource.directory.entries[0].data.struct.OffsetToData
                             size = sub_resource.directory.entries[0].data.struct.Size
                             data = pe.get_data(rva, size)
@@ -196,11 +193,9 @@ def patch_netinstall(key_dict: dict, input_file, output_file=None):
                                 elif _data[:4] == b'\x7FELF':
                                     new_data = patch_elf(_data, key_dict)
                                 else:
-                                    raise Exception(f'unknown bootloader format {
-                                                    _data[:4].hex().upper()}')
+                                    raise Exception(f'unknown bootloader format {_data[:4].hex().upper()}')
                             except Exception as e:
-                                print(f'patch {bootloader["arch"]}({
-                                      sub_resource.id}) bootloader failed {e}')
+                                print(f'patch {bootloader["arch"]}({sub_resource.id}) bootloader failed {e}')
                                 new_data = _data
                             new_data = struct.pack(
                                 "<I", _size) + new_data.ljust(len(_data), b'\0')
@@ -250,16 +245,14 @@ def patch_netinstall(key_dict: dict, input_file, output_file=None):
                               name_ptr-text_section_addr:].split(b'\0')[0]
             data = netinstall[text_section_offset+data_ptr -
                               text_section_addr:text_section_offset+data_ptr-text_section_addr+data_size]
-            print(f'found {name.decode()}({id}) bootloader offset {
-                  hex(text_section_offset+data_ptr-text_section_addr)} size {data_size}')
+            print(f'found {name.decode()}({id}) bootloader offset {hex(text_section_offset+data_ptr-text_section_addr)} size {data_size}')
             try:
                 if data[:2] == b'MZ':
                     new_data = patch_pe(data, key_dict)
                 elif data[:4] == b'\x7FELF':
                     new_data = patch_elf(data, key_dict)
                 else:
-                    raise Exception(f'unknown bootloader format {
-                                    data[:4].hex().upper()}')
+                    raise Exception(f'unknown bootloader format {data[:4].hex().upper()}')
             except Exception as e:
                 print(f'patch {name.decode()}({id}) bootloader failed {e}')
                 new_data = data
@@ -295,8 +288,7 @@ def patch_squashfs(path, key_dict):
                 data = open(file, 'rb').read()
                 for old_public_key, new_public_key in key_dict.items():
                     if old_public_key in data:
-                        print(f'{file} public key patched {
-                              old_public_key[:16].hex().upper()}...')
+                        print(f'{file} public key patched {old_public_key[:16].hex().upper()}...')
                         data = data.replace(old_public_key, new_public_key)
                         open(file, 'wb').write(data)
 
@@ -324,8 +316,7 @@ def patch_npk_package(package, key_dict):
         patch_squashfs(extract_dir, key_dict)
         print(f"pack {extract_dir} ...")
         run_shell_command(f"rm -f {squashfs_file}")
-        run_shell_command(f"mksquashfs {extract_dir} {
-                          squashfs_file} -quiet -comp xz -no-xattrs -b 256k")
+        run_shell_command(f"mksquashfs {extract_dir} {squashfs_file} -quiet -comp xz -no-xattrs -b 256k")
         print(f"clean ...")
         run_shell_command(f"rm -rf {extract_dir}")
         package[NpkPartID.SQUASHFS].data = open(squashfs_file, 'rb').read()
