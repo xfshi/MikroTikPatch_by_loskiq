@@ -20,16 +20,14 @@ def lic_parse_ros(lic: str, public_key: bytes):
     lic: bytes = mikro_base64_decode(slic)
     licVal = mikro_decode(lic[:16])
     software_id = int.from_bytes(licVal[:6], 'little')
-    print(f"Software ID: {mikro_softwareid_encode(
-        software_id)}({hex(software_id)})")
+    print(f"Software ID: {mikro_softwareid_encode(software_id)}({hex(software_id)})")
     print(f"RouterOS Version: {licVal[6]}")
     print(f"License Level: {licVal[7]}")
     nonce_hash = lic[16:32]
     print(f"Nonce Hash: {nonce_hash.hex()}")
     signature = lic[32:64]
     print(f"Signature: {signature.hex()}")
-    print(f'License valid: {mikro_kcdsa_verify(
-        licVal, nonce_hash+signature, public_key)}')
+    print(f'License valid: {mikro_kcdsa_verify(licVal, nonce_hash+signature, public_key)}')
 
 
 def lic_parse_chr(lic: str, public_key: bytes):
@@ -46,8 +44,7 @@ def lic_parse_chr(lic: str, public_key: bytes):
     print(f"Nonce Hash: {nonce_hash.hex()}")
     signature = lic[32:64]
     print(f"Signature: {signature.hex()}")
-    print(f'License valid: {mikro_kcdsa_verify(
-        licVal, nonce_hash+signature, public_key)}')
+    print(f'License valid: {mikro_kcdsa_verify(licVal, nonce_hash+signature, public_key)}')
 
 
 def lic_gen_ros(software_id, private_key: bytes):
@@ -120,15 +117,11 @@ if __name__ == '__main__':
         print('export MIKRO_NPK_SIGN_PUBLIC_KEY="C293CED638A2A33C681FC8DE98EE26C54EADC5390C2DFCE197D35C83C416CF59"')
         print('export MIKRO_LICENSE_PUBLIC_KEY="8E1067E4305FCDC0CFBF95C10F96E5DFE8C49AEF486BD1A4E2E96C27F01E3E32"')
         eddsa_private_key, eddsa_public_key = generate_eddsa_keypair()
-        print(f'export CUSTOM_NPK_SIGN_PRIVATE_KEY="{
-              eddsa_private_key.hex().upper()}"')
-        print(f'export CUSTOM_NPK_SIGN_PUBLIC_KEY="{
-              eddsa_public_key.hex().upper()}"')
+        print(f'export CUSTOM_NPK_SIGN_PRIVATE_KEY="{eddsa_private_key.hex().upper()}"')
+        print(f'export CUSTOM_NPK_SIGN_PUBLIC_KEY="{eddsa_public_key.hex().upper()}"')
         kcdsa_private_key, kcdsa_public_key = generate_kcdsa_keypair()
-        print(f'export CUSTOM_LICENSE_PRIVATE_KEY="{
-              kcdsa_private_key.hex().upper()}"')
-        print(f'export CUSTOM_LICENSE_PUBLIC_KEY="{
-              kcdsa_public_key.hex().upper()}"')
+        print(f'export CUSTOM_LICENSE_PRIVATE_KEY="{kcdsa_private_key.hex().upper()}"')
+        print(f'export CUSTOM_LICENSE_PUBLIC_KEY="{kcdsa_public_key.hex().upper()}"')
     elif args.command == 'licgenros':
         print(lic_gen_ros(args.software_id, bytes.fromhex(args.private_key)))
     elif args.command == 'licgenchr':
