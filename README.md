@@ -1,10 +1,10 @@
 # Notice
 
 ## The patch is currently tested and working for:
-- **X86 (working)**
+- **X86 (ROS & CHR working)**
 - **MIPSBE (working)**
+- **ARM64 (CHR working)**
 - ARM (tested, bootloop)
-- ARM64 (not tested yet)
 - MMIPS (not tested yet)
 - SMIPS (not tested yet)
 - TILE (not tested yet)
