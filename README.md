@@ -1,5 +1,21 @@
 # Notice
 
+## The patch is currently tested and working for:
+- **X86 (working)**
+- **MIPSBE (working)**
+- ARM (tested, bootloop)
+- ARM64 (not tested yet)
+- MMIPS (not tested yet)
+- SMIPS (not tested yet)
+- TILE (not tested yet)
+- PPC (not tested yet)
+
+# Download
+
+You can download the automatically generated RouterOS image from [here](https://github.com/loskiq/MikroTikPatch/releases/latest).
+
+# How to generate license key
+
 I have already generated the keys for you. You can use them to generate a license key and sign packages:
 
 ```
@@ -11,17 +27,16 @@ export CUSTOM_LICENSE_PRIVATE_KEY="9DBC845E9018537810FDAE62824322EEE1B12BAD81FCA
 export CUSTOM_LICENSE_PUBLIC_KEY="723A34A6E3300F23E4BAA06156B9327514AEC170732655F16E04C17928DD770F"
 ```
 
-You can generate your own keys yourself, but in this case you will have to manually create a MikroTik image.  
-It is easier to use previously generated keys. Here is the command to generate your own keys:
+You can generate your own keys yourself, but in this case you will have to manually create a MikroTik image.
+
+- Install Python 3.x
+- Clone this repository
+
+Here is the command to generate your own keys:
 
 ```
 python3 license.py genkey
 ```
-
-# How to generate license key
-
-- Install Python 3.x
-- Clone this repository
 
 ## RouterOS
 
@@ -211,5 +226,3 @@ zip ../all_packages-mipsbe-$VERSION-patched.zip *.npk
 cd ../
 rm -rf ./all_packages-mipsbe
 ```
-
-Similarly for ARM, ARM64 and other architectures.
