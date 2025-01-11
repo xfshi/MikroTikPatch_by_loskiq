@@ -1,4 +1,4 @@
-name: Patch
+name: Patch v7
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
         BUILD_TIME=$(echo "$NEWEST" | cut -d' ' -f2)
         echo Latest Version: $LATEST_VERSION
         echo Build Time: $BUILD_TIME
-        _LATEST_VERSION=$(cat latest.txt | cut -d ' ' -f1)
+        _LATEST_VERSION=$(cat latest7.txt | cut -d ' ' -f1)
         if [ "$_LATEST_VERSION" == "$LATEST_VERSION" ]; then
           echo "No new version found"
           echo "has_new_version=false" >> $GITHUB_OUTPUT
@@ -155,28 +155,26 @@ jobs:
       if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache_refind.outputs.cache-hit != 'true' && matrix.arch == 'x86'
       run: sudo curl -s -o refind-bin-0.14.2.zip https://nchc.dl.sourceforge.net/project/refind/0.14.2/refind-bin-0.14.2.zip
 
-    - name: Cache install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+    - name: Cache install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}
       if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86'
       id: cache_install_image
       uses: actions/cache@v4
       with:
-        path: install-image.img
+        path: install-image.zip
         key: install-image-${{ env.LATEST_VERSION }}-${{ matrix.arch }}
 
-    - name: Get install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+    - name: Get install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}
       if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache_install_image.outputs.cache-hit != 'true' && matrix.arch == 'x86'
       run: |
           sudo curl -s -o install-image.zip https://download.mikrotik.com/routeros/$LATEST_VERSION/install-image-$LATEST_VERSION.zip
-          sudo unzip install-image.zip
-          sudo rm install-image.zip
-          sudo mv install-image-$LATEST_VERSION.img install-image.img
 
-    - name: Patch install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+    - name: Patch install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}
       if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86'
       run: |
-        sudo modprobe nbd
         sudo apt-get install -y qemu-utils extlinux > /dev/null
-        sudo qemu-nbd -c /dev/nbd0 -f raw install-image.img
+        sudo unzip install-image.zip
+        sudo modprobe nbd
+        sudo qemu-nbd -c /dev/nbd0 -f raw install-image-$LATEST_VERSION.img
         sudo mkdir ./install
         sudo mount /dev/nbd0 ./install
         sudo mkdir -p ./install/EFI/BOOT
@@ -193,7 +191,7 @@ jobs:
         sudo umount /dev/nbd0
         sudo qemu-nbd -d /dev/nbd0
         sudo rm -rf ./install
-        sudo cp install-image.img install-image-$LATEST_VERSION$ARCH-patched.img
+        sudo mv install-image-$LATEST_VERSION.img install-image-$LATEST_VERSION$ARCH-patched.img
 
         sudo qemu-img convert -f raw -O qcow2 install-image-$LATEST_VERSION$ARCH-patched.img install-image-$LATEST_VERSION$ARCH-patched.qcow2
         sudo qemu-img convert -f raw -O vmdk install-image-$LATEST_VERSION$ARCH-patched.img install-image-$LATEST_VERSION$ARCH-patched.vmdk
@@ -215,28 +213,26 @@ jobs:
         sudo rm install-image-$LATEST_VERSION$ARCH-patched.vdi
         sudo rm install-image-$LATEST_VERSION$ARCH-patched.img
 
-    - name: Cache chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+    - name: Cache chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}
       if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       id: cache_chr_img
       uses: actions/cache@v4
       with:
-        path: chr.img
+        path: chr.img.zip
         key: chr-${{ env.LATEST_VERSION }}-${{ matrix.arch }}
 
-    - name: Get chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+    - name: Get chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}
       if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache_chr_img.outputs.cache-hit != 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       run: |
           sudo curl -s -o chr.img.zip https://download.mikrotik.com/routeros/$LATEST_VERSION/chr-$LATEST_VERSION$ARCH.img.zip
-          sudo unzip chr.img.zip
-          sudo rm chr.img.zip
-          sudo mv chr-$LATEST_VERSION$ARCH.img chr.img
 
-    - name: Patch chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+    - name: Patch chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}
       if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       run: |
-        sudo modprobe nbd
         sudo apt-get install -y qemu-utils extlinux > /dev/null
-        sudo qemu-nbd -c /dev/nbd0 -f raw chr.img
+        sudo unzip chr.img.zip
+        sudo modprobe nbd
+        sudo qemu-nbd -c /dev/nbd0 -f raw chr-$LATEST_VERSION$ARCH.img
         sudo mkdir -p ./img/{boot,routeros}
         sudo mount /dev/nbd0p1 ./img/boot/
         if [ "${{ matrix.arch }}" == "x86" ]; then
@@ -255,7 +251,7 @@ jobs:
         sudo umount /dev/nbd0p2
         sudo rm -rf ./img
         sudo qemu-nbd -d /dev/nbd0
-        sudo cp chr.img chr-$LATEST_VERSION$ARCH-patched.img
+        sudo mv chr-$LATEST_VERSION$ARCH.img chr-$LATEST_VERSION$ARCH-patched.img
 
         sudo qemu-img convert -f raw -O qcow2 chr-$LATEST_VERSION$ARCH-patched.img chr-$LATEST_VERSION$ARCH-patched.qcow2
         sudo qemu-img convert -f raw -O vmdk chr-$LATEST_VERSION$ARCH-patched.img chr-$LATEST_VERSION$ARCH-patched.vmdk
@@ -343,10 +339,10 @@ jobs:
     - name: Update latest version
       if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86'
       run: |
-        echo $NEWEST > latest.txt
+        echo $NEWEST > latest7.txt
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add latest.txt
+        git add latest7.txt
         git commit -m "Update latest version"
         git push
 
