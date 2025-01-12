@@ -12,7 +12,7 @@
 
 # Download
 
-You can download the automatically generated RouterOS image from [here](https://github.com/loskiq/MikroTikPatch/releases/latest).
+You can download the automatically generated RouterOS image from [here](https://github.com/loskiq/MikroTikPatch/releases).
 
 # How to generate license key
 
