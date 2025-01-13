@@ -29,6 +29,13 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mkisofs xorriso qemu-utils extlinux --no-install-recommends
+        sudo pip install -r requirements.txt
 
     - name: Check latest version
       id: get_latest
@@ -68,7 +75,6 @@ jobs:
           ARCH='-ppc'
         fi
         echo "ARCH=$ARCH" >> $GITHUB_ENV
-        sudo apt-get update > /dev/null
 
     - name: Cache mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}.iso
       if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
@@ -86,7 +92,6 @@ jobs:
     - name: Patch mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}.iso
       if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       run: |
-        sudo apt-get install -y mkisofs xorriso --no-install-recommends > /dev/null
         sudo mkdir iso
         sudo mount -o loop,ro mikrotik.iso iso/
         sudo mkdir new_iso
@@ -170,7 +175,6 @@ jobs:
     - name: Patch install-image-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
       if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86'
       run: |
-        sudo apt-get install -y qemu-utils extlinux --no-install-recommends > /dev/null
         sudo unzip install-image.zip
         sudo modprobe nbd
         sudo qemu-nbd -c /dev/nbd0 -f raw install-image-$LATEST_VERSION.img
@@ -225,7 +229,6 @@ jobs:
     - name: Patch chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
       if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       run: |
-        sudo apt-get install -y qemu-utils extlinux --no-install-recommends > /dev/null
         sudo unzip chr.img.zip
         sudo modprobe nbd
         sudo qemu-nbd -c /dev/nbd0 -f raw chr-$LATEST_VERSION$ARCH.img

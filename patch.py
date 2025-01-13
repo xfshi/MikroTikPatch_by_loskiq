@@ -161,8 +161,6 @@ def patch_pe(data: bytes, key_dict: dict):
 def patch_netinstall(key_dict: dict, input_file, output_file=None):
     netinstall = open(input_file, 'rb').read()
     if netinstall[:2] == b'MZ':
-        from package import check_install_package
-        check_install_package(['pefile'])
         import pefile
         ROUTEROS_BOOT = {
             129: {'arch': 'power', 'name': 'Powerboot'},

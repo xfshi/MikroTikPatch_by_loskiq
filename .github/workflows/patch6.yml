@@ -27,6 +27,11 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mkisofs xorriso qemu-utils extlinux --no-install-recommends
+
     - name: Check latest version
       id: get_latest
       run: |
@@ -47,7 +52,6 @@ jobs:
         cat CHANGELOG
         echo "NEWEST=${NEWEST}" >> $GITHUB_ENV
         echo "LATEST_VERSION=${LATEST_VERSION}" >> $GITHUB_ENV
-        sudo apt-get update > /dev/null
 
     - name: Cache mikrotik-${{ env.LATEST_VERSION }}.iso
       if: steps.get_latest.outputs.has_new_version == 'true'
@@ -65,7 +69,6 @@ jobs:
     - name: Patch mikrotik-${{ env.LATEST_VERSION }}.iso
       if: steps.get_latest.outputs.has_new_version == 'true'
       run: |
-        sudo apt-get install -y mkisofs xorriso --no-install-recommends > /dev/null
         sudo mkdir iso
         sudo mount -o loop,ro mikrotik.iso iso/
         sudo mkdir new_iso/
@@ -113,7 +116,6 @@ jobs:
     - name: Patch install-image-${{ env.LATEST_VERSION }}.img
       if: steps.get_latest.outputs.has_new_version == 'true'
       run: |
-        sudo apt-get install -y qemu-utils extlinux --no-install-recommends > /dev/null
         sudo unzip install-image.zip
         sudo modprobe nbd
         sudo qemu-nbd -c /dev/nbd0 -f raw install-image-$LATEST_VERSION.img
@@ -165,7 +167,6 @@ jobs:
     - name: Patch chr-${{ env.LATEST_VERSION }}.img
       if: steps.get_latest.outputs.has_new_version == 'true'
       run: |
-        sudo apt-get install -y qemu-utils extlinux --no-install-recommends > /dev/null
         sudo unzip chr.img.zip
         sudo modprobe nbd
         sudo qemu-nbd -c /dev/nbd0 -f raw chr-$LATEST_VERSION.img
