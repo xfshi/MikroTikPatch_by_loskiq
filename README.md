@@ -2,10 +2,10 @@
 
 ## The patch is currently tested and working for:
 - **X86 (ROS & CHR working)**
-- **MIPSBE (working)**
 - **ARM64 (CHR working)**
-- ARM (tested, bootloop)
-- MMIPS (not tested yet)
+- ARM (bootloop)
+- MIPSBE (bootloop on some devices)
+- MMIPS (bootloop)
 - SMIPS (not tested yet)
 - TILE (not tested yet)
 - PPC (not tested yet)
