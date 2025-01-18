@@ -98,7 +98,7 @@ def patch_block(dev: str, file: str, key_dict):
 
 def patch_initrd_xz(initrd_xz:bytes,key_dict:dict,ljust=True):
     initrd = lzma.decompress(initrd_xz)
-    new_initrd = initrd  
+    new_initrd = initrd
     for old_public_key,new_public_key in key_dict.items():
         if old_public_key in new_initrd:
             print(f'initrd public key patched {old_public_key[:16].hex().upper()}...')
