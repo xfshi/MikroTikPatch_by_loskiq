@@ -40,7 +40,7 @@ jobs:
       id: get_latest
       run: |
         echo $(uname -a)
-        NEWEST=$(curl -s https://upgrade.mikrotik.com/routeros/NEWESTa7.stable)
+        NEWEST=7.16.2 1741694344
         LATEST_VERSION=$(echo "$NEWEST" | cut -d' ' -f1)
         BUILD_TIME=$(echo "$NEWEST" | cut -d' ' -f2)
         echo Latest Version: $LATEST_VERSION
